@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">BulkyBookApp</string>
+    <string name="app_name">BulkyBook</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="skip">Skip</string>
+    <string name="ready_to_dive_into_a_world_of_endless_reading_possibilities">Ready to dive into a world of endless reading possibilities?</string>
+    <string name="welcome_to_our_ecommerce_book_app_discover_your_next_favorite_book_with_us">Welcome to our ecommerce book app Discover your next favorite book with us.</string>
+    <string name="our_app_offers_a_vast_collection_of_books_in_all_genres_ready_for_you_to_explore">Our app offers a vast collection of books in all genres, ready for you to explore.</string>
 </resources>

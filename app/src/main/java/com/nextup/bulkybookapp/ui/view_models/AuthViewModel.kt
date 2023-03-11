@@ -1,5 +1,6 @@
 package com.nextup.bulkybookapp.ui.view_models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nextup.bulkybookapp.Utils.ApiResponse
@@ -59,6 +60,7 @@ class AuthViewModel @Inject constructor(
                 }
                 is ApiResponse.ApiSuccess -> {
                     _loginState.emit(UiState.Success(response.data))
+                    Log.e("login error", "${response.response?.errorBody()}")
                 }
             }
 

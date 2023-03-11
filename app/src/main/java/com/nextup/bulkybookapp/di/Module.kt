@@ -1,11 +1,11 @@
 package com.nextup.bulkybookapp.di
 
 import android.app.Application
-import android.app.Service
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nextup.bulkybookapp.Utils.DataStore
 import com.nextup.bulkybookapp.domain.network.NetworkConnection
+import com.nextup.bulkybookapp.domain.network.Service
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -24,14 +24,15 @@ import javax.inject.Singleton
 object Module {
 
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideService(dataStore: DataStore): Service {
-        val baseUrl = "https://localhost:7128/"
+        val baseUrl = "https://192.168.0.26:7128/"
 
         val token = dataStore.readString(dataStore.tags().TOKEN_TAG)
 
         val logging = HttpLoggingInterceptor()
+
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()

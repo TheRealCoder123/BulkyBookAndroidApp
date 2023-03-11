@@ -14,7 +14,7 @@ interface Service {
     @POST("auth/login")
     suspend fun login(@Body loginParams: LoginParams): Response<LoginResponse>
 
-    @POST("auth/login")
+    @POST("auth/register")
     suspend fun register(@Body registerParams: RegisterParams): Response<RegisterResponse>
 
 

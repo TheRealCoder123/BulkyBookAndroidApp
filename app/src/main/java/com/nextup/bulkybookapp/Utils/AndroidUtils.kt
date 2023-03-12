@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.nextup.bulkybookapp.R
 import com.nextup.bulkybookapp.Utils.AndroidUtils.showLoadingDialog
+import com.nextup.bulkybookapp.ui.activities.Main.MainActivity
 import io.github.muddz.styleabletoast.StyleableToast
 
 object AndroidUtils {
@@ -19,10 +20,22 @@ object AndroidUtils {
         }
     }
 
-    fun Fragment.startActivity(startActivity: AppCompatActivity) {
-        Intent(requireActivity(), startActivity::class.java).also { intent->
+    fun Fragment.startActivity(startActivity: AppCompatActivity)  {
+       Intent(requireActivity(), startActivity::class.java).also { intent->
             startActivity(intent)
         }
+    }
+
+    fun AppCompatActivity.startActivityFinishBackground(startActivity: AppCompatActivity) {
+        val intent = Intent(this, startActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+    }
+
+    fun Fragment.startActivityFinishBackground(startActivity: AppCompatActivity)  {
+        val intent = Intent(requireActivity(), startActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 
     fun AppCompatActivity.initLoadingDialog(){

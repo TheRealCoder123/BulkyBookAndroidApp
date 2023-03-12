@@ -17,7 +17,9 @@ import com.nextup.bulkybookapp.Utils.AndroidUtils.hideLoadingDialog
 import com.nextup.bulkybookapp.Utils.AndroidUtils.initLoadingDialog
 import com.nextup.bulkybookapp.Utils.AndroidUtils.showLoadingDialog
 import com.nextup.bulkybookapp.Utils.AndroidUtils.startActivity
+import com.nextup.bulkybookapp.Utils.AndroidUtils.startActivityFinishBackground
 import com.nextup.bulkybookapp.Utils.AndroidUtils.toast
+import com.nextup.bulkybookapp.Utils.DataStore
 import com.nextup.bulkybookapp.Utils.UiState
 import com.nextup.bulkybookapp.data.Models.auth.LoginParams
 import com.nextup.bulkybookapp.databinding.FragmentSignInBinding
@@ -27,12 +29,16 @@ import com.nextup.bulkybookapp.ui.activities.Main.MainActivity
 import com.nextup.bulkybookapp.ui.view_models.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignInFragment : Fragment() {
 
     private lateinit var binding: FragmentSignInBinding
     private lateinit var authVm: AuthViewModel
+
+    @Inject
+    lateinit var dataStore: DataStore
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +57,20 @@ class SignInFragment : Fragment() {
         authVm = (requireActivity() as AuthActivity).authVm
 
         collectSignInResponse()
+
+        val isGuest = dataStore.readBoolean(dataStore.tags().CONTINUE_AS_GUEST_TAG)
+
+        if (isGuest){
+            binding.CountinueAsGuest.visibility = View.GONE
+        }else{
+            binding.CountinueAsGuest.visibility = View.VISIBLE
+        }
+
+        binding.CountinueAsGuest.setOnClickListener {
+            startActivity(MainActivity())
+            requireActivity().finish()
+            dataStore.saveBoolean(dataStore.tags().CONTINUE_AS_GUEST_TAG, true)
+        }
 
         binding.SignUp.setOnClickListener {
             findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
@@ -104,7 +124,8 @@ class SignInFragment : Fragment() {
                 }
                 is UiState.Success -> {
                     hideLoadingDialog()
-                    startActivity(MainActivity())
+                    startActivityFinishBackground(MainActivity())
+                    dataStore.saveBoolean(dataStore.tags().CONTINUE_AS_GUEST_TAG, false)
                     requireActivity().finish()
                 }
                 is UiState.Idle -> {}

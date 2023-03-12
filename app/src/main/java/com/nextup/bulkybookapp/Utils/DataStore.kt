@@ -12,7 +12,7 @@ class DataStore(context: Context)  {
         return  DataStoreTags
     }
 
-    fun saveString(tag: String, data: String){
+    fun saveString(tag: String, data: String?){
         val editor = sharedPreference.edit()
         editor.putString(tag, data)
         editor.apply()

@@ -1,9 +1,9 @@
 package com.nextup.bulkybookapp.ui.view_models
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nextup.bulkybookapp.Utils.ApiResponse
+import com.nextup.bulkybookapp.Utils.DataStore
 import com.nextup.bulkybookapp.Utils.UiState
 import com.nextup.bulkybookapp.data.Models.auth.LoginParams
 import com.nextup.bulkybookapp.data.Models.auth.LoginResponse
@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private var repository: AuthRepository,
-    private var networkConnection: NetworkConnection
+    private var networkConnection: NetworkConnection,
+    private var dataStore: DataStore
 ) : ViewModel() {
 
     private val _registerState = MutableStateFlow<UiState<RegisterResponse>>(UiState.Idle())
@@ -36,7 +37,20 @@ class AuthViewModel @Inject constructor(
 
             when(val response = repository.register(registerParams)){
                 is ApiResponse.ApiFailed -> {
-                    _registerState.emit(UiState.Error(null,response.message ?: response.response!!.message()))
+                    when(response.response?.code()){
+                        409 -> {
+                            _registerState.emit(UiState.Error(
+                                null,
+                                "A user with that email already exists into our database"
+                            ))
+                        }
+                        400 -> {
+                            _registerState.emit(UiState.Error(
+                                null,
+                                "Something went wrong creating your account, please try again"
+                            ))
+                        }
+                    }
                 }
                 is ApiResponse.ApiSuccess -> {
                     _registerState.emit(UiState.Success(response.data))
@@ -56,11 +70,32 @@ class AuthViewModel @Inject constructor(
 
             when(val response = repository.login(params = loginParams)){
                 is ApiResponse.ApiFailed -> {
-                    _loginState.emit(UiState.Error(null,response.message ?: response.response!!.message()))
+
+                    when(response.response?.code()){
+
+                        404->{
+                            _loginState.emit(UiState.Error(null,"User with those credentials does not exist"))
+                        }
+                        400->{
+                            _loginState.emit(UiState.Error(
+                                null,
+                                "Your email or password does not match to any into our database"
+                            ))
+                        }
+
+
+                    }
+
+
                 }
                 is ApiResponse.ApiSuccess -> {
+
+                    val data = response.data
+                    dataStore.saveString(dataStore.tags().USER_IDENTIFIER_TAG, data!!.user.userId)
+                    dataStore.saveString(dataStore.tags().TOKEN_TAG, data.token)
+                    dataStore.saveString(dataStore.tags().USER_ROLE_TAG, data.user.role)
+
                     _loginState.emit(UiState.Success(response.data))
-                    Log.e("login error", "${response.response?.errorBody()}")
                 }
             }
 
